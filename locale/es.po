@@ -1,0 +1,13 @@
+#
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "selection:party.party,sale_invoice_grouping_period:"
+msgid "Customer Payment Days"
+msgstr "Dias de pago de cliente"
+
+msgctxt "model:ir.message,text:msg_customer_payment_days_required"
+msgid "Customer payment days are required for party \"%(party)s\"."
+msgstr ""
+"Dias de pago son requeridos para al tercero "
+"\"%(party)s\"."
