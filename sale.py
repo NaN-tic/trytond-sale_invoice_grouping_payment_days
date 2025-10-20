@@ -1,4 +1,4 @@
-from datetime import date as date_cls
+import datetime
 from dateutil.relativedelta import relativedelta
 from trytond.pool import PoolMeta, Pool
 from trytond.transaction import Transaction
@@ -38,7 +38,7 @@ class Sale(metaclass=PoolMeta):
         pool = Pool()
         PTline = pool.get('account.invoice.payment_term.line')
 
-        today = date or date_cls.today()
+        today = date or datetime.date.today()
         month_first = today.replace(day=1)
         month_last = (month_first + relativedelta(months=1)) - relativedelta(days=1)
 
