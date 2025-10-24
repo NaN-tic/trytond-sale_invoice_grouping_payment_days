@@ -16,18 +16,10 @@ class PaymentTermLine(metaclass=PoolMeta):
         if payment_days:
             assert isinstance(payment_days, list)
             payment_days = sorted(payment_days)
-            found = False
             for day in reversed(payment_days):
-                if date.day >= day:
-                    if day > days_in_month(date):
-                        day = days_in_month(date)
-                    date += relativedelta(day=day)
-                    found = True
-                    break
-            if not found:
-                day = payment_days[-1]
-                date += relativedelta(day=day, months=-1)
-        return date
+                if day < date.day:
+                    return date + relativedelta(day=day)
+        return date + relativedelta(day=1)
 
 class Sale(metaclass=PoolMeta):
     __name__ = 'sale.sale'
@@ -52,17 +44,10 @@ class Sale(metaclass=PoolMeta):
         if not norm_days:
             return month_first, month_last
 
-        is_exact = (today.day in norm_days)
-
         next_date = PTline.next_payment_day(today, norm_days)
         prev_date = PTline.previous_payment_day(today, norm_days)
 
-        if is_exact:
-            next_strict = PTline.next_payment_day(today + relativedelta(days=1), norm_days)
-            start = today
-            end = next_strict if next_strict.month == today.month else month_last
-            return start, end
-
-        start = (prev_date + relativedelta(days=1)) if prev_date.month == today.month else month_first
         end = next_date if next_date.month == today.month else month_last
+        start = (prev_date + relativedelta(days=1)) if prev_date.month == today.month and prev_date.day != 1 else month_first
+
         return start, end
