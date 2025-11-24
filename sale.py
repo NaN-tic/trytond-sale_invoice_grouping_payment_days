@@ -3,8 +3,6 @@ from dateutil.relativedelta import relativedelta
 from trytond.pool import PoolMeta, Pool
 from trytond.transaction import Transaction
 
-def days_in_month(date):
-        return (date + relativedelta(day=31)).day
 
 class PaymentTermLine(metaclass=PoolMeta):
     __name__ = 'account.invoice.payment_term.line'
@@ -21,6 +19,7 @@ class PaymentTermLine(metaclass=PoolMeta):
                     return date + relativedelta(day=day)
         return date + relativedelta(day=1)
 
+
 class Sale(metaclass=PoolMeta):
     __name__ = 'sale.sale'
 
@@ -28,7 +27,7 @@ class Sale(metaclass=PoolMeta):
         if period != 'customer_payment_days':
             return super()._get_invoice_dates(date, period)
         pool = Pool()
-        PTline = pool.get('account.invoice.payment_term.line')
+        PTLine = pool.get('account.invoice.payment_term.line')
 
         today = date or datetime.date.today()
         month_first = today.replace(day=1)
@@ -36,16 +35,13 @@ class Sale(metaclass=PoolMeta):
 
         raw = self.party.customer_payment_days or ""
 
-        norm_days = sorted({
-        min(max(int(d), 1), month_last.day)
-        for d in raw.split()
-        if d.isdigit()
-        })
+        norm_days = sorted({min(max(int(d), 1), month_last.day)
+                            for d in raw.split() if d.isdigit()})
         if not norm_days:
             return month_first, month_last
 
-        next_date = PTline.next_payment_day(today, norm_days)
-        prev_date = PTline.previous_payment_day(today, norm_days)
+        next_date = PTLine.next_payment_day(today, norm_days)
+        prev_date = PTLine.previous_payment_day(today, norm_days)
 
         end = next_date if next_date.month == today.month else month_last
         start = (prev_date + relativedelta(days=1)) if prev_date.month == today.month and prev_date.day != 1 else month_first
