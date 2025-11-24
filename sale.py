@@ -24,10 +24,11 @@ class Sale(metaclass=PoolMeta):
     __name__ = 'sale.sale'
 
     def _get_invoice_dates(self, date, period):
-        if period != 'customer_payment_days':
-            return super()._get_invoice_dates(date, period)
         pool = Pool()
         PTLine = pool.get('account.invoice.payment_term.line')
+
+        if period != 'customer_payment_days':
+            return super()._get_invoice_dates(date, period)
 
         today = date or datetime.date.today()
         month_first = today.replace(day=1)
