@@ -41,7 +41,8 @@ class Sale(metaclass=PoolMeta):
         if not norm_days:
             return month_first, month_last
 
-        next_date = PTLine.next_payment_day(today, norm_days)
+        with Transaction().set_context(account_payment_days=norm_days):
+            next_date = PTLine().next_payment_day(today)
         prev_date = PTLine.previous_payment_day(today, norm_days)
 
         end = next_date if next_date.month == today.month else month_last
