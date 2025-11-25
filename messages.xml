@@ -6,8 +6,5 @@ this repository contains the full copyright notices and license terms. -->
         <record model="ir.message" id="msg_customer_payment_days_required">
             <field name="text">To use grouping period "Customer Payment Dates", customer payment days must be set for party "%(party)s".</field>
         </record>
-        <!-- <record model="ir.message" id="msg_no_customer_payment_days_warning">
-            <field name="text">You are trying to remove customer payment days while having grouping period "Customer Payment Dates" on "%(party)s", which is not allowed.\\n If you continue, the invoice grouping period will be changed to "Standard". Changes will be reverted otherwise.</field>
-        </record> -->
     </data>
 </tryton>

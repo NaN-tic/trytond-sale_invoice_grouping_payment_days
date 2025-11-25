@@ -32,7 +32,8 @@ class Sale(metaclass=PoolMeta):
 
         today = date or datetime.date.today()
         month_first = today.replace(day=1)
-        month_last = (month_first + relativedelta(months=1)) - relativedelta(days=1)
+        month_last = ((month_first + relativedelta(months=1)) -
+                      relativedelta(days=1))
 
         raw = self.party.customer_payment_days or ""
 
@@ -46,6 +47,8 @@ class Sale(metaclass=PoolMeta):
         prev_date = PTLine.previous_payment_day(today, norm_days)
 
         end = next_date if next_date.month == today.month else month_last
-        start = (prev_date + relativedelta(days=1)) if prev_date.month == today.month and prev_date.day != 1 else month_first
+        start = ((prev_date + relativedelta(days=1))
+                 if prev_date.month == today.month and prev_date.day != 1
+                 else month_first)
 
         return start, end

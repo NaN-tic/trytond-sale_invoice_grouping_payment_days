@@ -47,22 +47,6 @@ class Test(unittest.TestCase):
         sale_user.groups.append(sale_group)
         sale_user.save()
 
-        # Create stock user
-        stock_user = User()
-        stock_user.name = 'Stock'
-        stock_user.login = 'stock'
-        stock_group, = Group.find([('name', '=', 'Stock')])
-        stock_user.groups.append(stock_group)
-        stock_user.save()
-
-        # Create account user
-        account_user = User()
-        account_user.name = 'Account'
-        account_user.login = 'account'
-        account_group, = Group.find([('name', '=', 'Account')])
-        account_user.groups.append(account_group)
-        account_user.save()
-
         # Create fiscal year
         fiscalyear = set_fiscalyear_invoice_sequences(
             create_fiscalyear(company))
@@ -110,24 +94,6 @@ class Test(unittest.TestCase):
         template.save()
         product, = template.products
 
-        # Create an Inventory
-        Inventory = Model.get('stock.inventory')
-        Location = Model.get('stock.location')
-        storage, = Location.find([
-            ('code', '=', 'STO'),
-        ])
-        inventory = Inventory()
-        inventory.location = storage
-        inventory_line = inventory.lines.new(product=product)
-        inventory_line.quantity = 100.0
-        inventory_line.expected_quantity = 0.0
-        inventory.click('confirm')
-        self.assertEqual(inventory.state, 'done')
-
-        # Sale some products before payment day
-        config.user = sale_user.id
-        Sale = Model.get('sale.sale')
-        sale1 = Sale()
         # Sale some products before payment day
         config.user = sale_user.id
         Sale = Model.get('sale.sale')
@@ -175,13 +141,16 @@ class Test(unittest.TestCase):
         ])
         self.assertEqual(len(invoices), 2)
 
-        # Find the invoice for the first period (1-20)
+        # Find the invoice for the first period (1-20) and second (21-month end)
         invoice1 = None
         invoice2 = None
         for inv in invoices:
-            if inv.start_date == today.replace(day=1) and inv.end_date == today.replace(day=20):
+            if (inv.start_date == today.replace(day=1) and
+                inv.end_date == today.replace(day=20)):
                 invoice1 = inv
-            elif inv.start_date == today.replace(day=21) and inv.end_date == (today + relativedelta(months=1)).replace(day=1) - relativedelta(days=1):
+            elif (inv.start_date == today.replace(day=21) and
+                  inv.end_date == (today + relativedelta(months=1)
+                                   ).replace(day=1) - relativedelta(days=1)):
                 invoice2 = inv
 
         self.assertIsNotNone(invoice1)
@@ -194,4 +163,6 @@ class Test(unittest.TestCase):
 
         # Check invoice dates
         self.assertEqual(invoice1.invoice_date, today.replace(day=20))
-        self.assertEqual(invoice2.invoice_date, (today + relativedelta(months=1)).replace(day=1) - relativedelta(days=1))
+        self.assertEqual(invoice2.invoice_date,
+                         (today + relativedelta(months=1)
+                          ).replace(day=1) - relativedelta(days=1))
