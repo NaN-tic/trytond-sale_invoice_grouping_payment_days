@@ -1,6 +1,7 @@
 from trytond.pool import PoolMeta
 from trytond.i18n import gettext
-from trytond.exceptions import UserError
+from trytond.model.exceptions import ValidationError
+
 
 class Party(metaclass=PoolMeta):
     __name__ = "party.party"
@@ -19,12 +20,13 @@ class Party(metaclass=PoolMeta):
             if p.sale_invoice_grouping_period != 'customer_payment_days':
                 return
             if not p.customer_payment_days:
-                raise UserError(
+                raise ValidationError(
                     gettext(
                         'sale_invoice_grouping_payment_days.msg_customer_payment_days_required',
                         party=p.rec_name
                     )
                 )
+
 
 class PartySaleInvoiceGroupingMethod(metaclass=PoolMeta):
     __name__ = 'party.party.sale_invoice_grouping_method'
